@@ -296,7 +296,7 @@ function createResponse(data) {
 function parseDatetime(data) {
     return new Date(
         Date.UTC(
-            data[0] + 2000, data[1], data[2], data[3], data[4], data[5]));
+            data[0] + 2000, data[1] - 1, data[2], data[3], data[4], data[5]));
 }
 
 function decodeGt06Lat(lat, course) {

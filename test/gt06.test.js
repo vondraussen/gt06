@@ -79,6 +79,34 @@ const locationResult = {
     responseMsg: null
 }
 
+const timeTest = new Buffer.from('78781f1213051d0d2506c8055dae3900ec0a9584355f010603b7fc0095fe0030bfb30d0a', 'hex')
+const timeTestResult = { fixTime: "2019-05-29T13:37:06.000Z" }
+
+const timeTest2 = new Buffer.from('78781f12130c14080723ca055cb28600e77082003400010603b7ac00b9b0002f6b020d0a', 'hex')
+const timeTest2Result = {
+    expectsResponse: false,
+    fixTime: '2019-12-20T08:07:35.000Z',
+    satCnt: 12,
+    satCntActive: 10,
+    lat: 49.978386,
+    lon: 8.426454,
+    speed: 0,
+    speedUnit: 'km/h',
+    realTimeGps: true,
+    gpsPositioned: true,
+    eastLongitude: true,
+    northLatitude: true,
+    course: 0,
+    mcc: 262,
+    mnc: 3,
+    lac: 47020,
+    cellId: 47536,
+    serialNr: 47,
+    errorCheck: 27394,
+    event: [Object],
+    parseTime: 1576829257394
+}
+
 const locationDouble = new Buffer.from('78781f1211071403362aca0543ec4f00ff976e021549010603e6b500e7590074763d0d0a78781f1211072403362aca0543ec4f00ff976e021549010603e6b500e7590074763d0d0a', 'hex')
 const locationTripple = new Buffer.from('78781f1211071403362aca0543ec4f00ff976e021549010603e6b500e7590074763d0d0a78781f1211072403362aca0543ec4f00ff976e021549010603e6b500e7590074763d0d0a78781f1211073403362aca0543ec4f00ff976e021549010603e6b500e7590074763d0d0a', 'hex')
 const locationQuad = new Buffer.from('78781f1211071403362aca0543ec4f00ff976e021549010603e6b500e7590074763d0d0a78781f1211072403362aca0543ec4f00ff976e021549010603e6b500e7590074763d0d0a78780a13400504000000153dc20d0a78781f1211073403362aca0543ec4f00ff976e021549010603e6b500e7590074763d0d0a', 'hex')
@@ -167,4 +195,16 @@ test('Multiple Messages in MsgBuffer Test', () => {
     expect(gt06.msgBuffer.length).toBe(10);
     gt06.clearMsgBuffer();
     expect(gt06.msgBuffer.length).toBe(0);
+});
+
+test('Time Test', () => {
+    var gt06 = new Gt06();
+    gt06.parse(timeTest);
+    expect(gt06.fixTime).toBe(timeTestResult.fixTime);
+});
+
+test('Time Test 2', () => {
+    var gt06 = new Gt06();
+    gt06.parse(timeTest2);
+    expect(gt06.fixTime).toBe(timeTest2Result.fixTime);
 });
