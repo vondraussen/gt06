@@ -30,6 +30,9 @@ Gt06.prototype.parse = function (data) {
             case 0x12: // location message
                 Object.assign(parsed, parseLocation(msg));
                 break;
+            case 34: // location message
+                Object.assign(parsed, parseLocation(msg));
+                break;
             case 0x13: // status message
                 Object.assign(parsed, parseStatus(msg));
                 parsed.expectsResponse = true;
@@ -84,6 +87,9 @@ function selectEvent(data) {
             eventStr = 'login';
             break;
         case 0x12:
+            eventStr = 'location';
+            break;
+        case 34:
             eventStr = 'location';
             break;
         case 0x13:
