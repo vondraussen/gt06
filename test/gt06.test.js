@@ -171,6 +171,8 @@ test('IMEI Storage Test', () => {
     expect(gt06.lat).toStrictEqual(locationResult.parsed.lat);
     expect(gt06.lon).toStrictEqual(locationResult.parsed.lon);
     expect(gt06.imei).toStrictEqual(loginResult.parsed.imei);
+    expect(gt06.msgBuffer[1].lat).toStrictEqual(locationResult.parsed.lat);
+    expect(gt06.msgBuffer[1].imei).toStrictEqual(loginResult.parsed.imei);
 });
 
 test('Multiple Messages in RawBuffer Test', () => {

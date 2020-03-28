@@ -28,10 +28,10 @@ Gt06.prototype.parse = function (data) {
                 parsed.responseMsg = createResponse(msg);
                 break;
             case 0x12: // location message
-                Object.assign(parsed, parseLocation(msg));
+                Object.assign(parsed, parseLocation(msg), { imei:this.imei });
                 break;
             case 0x13: // status message
-                Object.assign(parsed, parseStatus(msg));
+                Object.assign(parsed, parseStatus(msg), { imei:this.imei });
                 parsed.expectsResponse = true;
                 parsed.responseMsg = createResponse(msg);
                 break;
