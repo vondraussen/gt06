@@ -6,7 +6,7 @@ It parses all messages received from the device and creates the response message
 > Shout out to [Anton Holubenko](https://github.com/AntonHolubenko) because I've copied the initial version from him. [repo/gt06n](https://github.com/AntonHolubenko/gt06n)
 
 ## Usage
-```
+``` javascript
 const Gt06 = require('gt06');
 const net = require('net');
 
