@@ -80,12 +80,13 @@ const locationResult = {
 }
 
 const timeTest = new Buffer.from('78781f1213051d0d2506c8055dae3900ec0a9584355f010603b7fc0095fe0030bfb30d0a', 'hex')
-const timeTestResult = { fixTime: "2019-05-29T13:37:06.000Z" }
+const timeTestResult = { fixTime: "2019-05-29T13:37:06.000Z", fixTimestamp: 1559137026 }
 
 const timeTest2 = new Buffer.from('78781f12130c14080723ca055cb28600e77082003400010603b7ac00b9b0002f6b020d0a', 'hex')
 const timeTest2Result = {
     expectsResponse: false,
     fixTime: '2019-12-20T08:07:35.000Z',
+    fixTimestamp: 1576829255,
     satCnt: 12,
     satCntActive: 10,
     lat: 49.978386,
@@ -203,10 +204,12 @@ test('Time Test', () => {
     var gt06 = new Gt06();
     gt06.parse(timeTest);
     expect(gt06.fixTime).toBe(timeTestResult.fixTime);
+    expect(gt06.fixTimestamp).toBe(timeTestResult.fixTimestamp);
 });
 
 test('Time Test 2', () => {
     var gt06 = new Gt06();
     gt06.parse(timeTest2);
     expect(gt06.fixTime).toBe(timeTest2Result.fixTime);
+    expect(gt06.fixTimestamp).toBe(timeTest2Result.fixTimestamp);
 });

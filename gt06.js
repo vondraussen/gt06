@@ -214,6 +214,7 @@ function parseLocation(data) {
 
     let parsed = {
         fixTime: parseDatetime(datasheet.fixTime).toISOString(),
+        fixTimestamp: parseDatetime(datasheet.fixTime).getTime()/1000,
         satCnt: (datasheet.quantity & 0xF0) >> 4,
         satCntActive: (datasheet.quantity & 0x0F),
         lat: decodeGt06Lat(datasheet.lat, datasheet.course),
@@ -260,7 +261,8 @@ function parseAlarm(data) {
     };
 
     let parsed = {
-        fixTime: parseDatetime(datasheet.fixTime),
+        fixTime: parseDatetime(datasheet.fixTime).toISOString(),
+        fixTimestamp: parseDatetime(datasheet.fixTime).getTime()/1000,
         satCnt: (datasheet.quantity & 0xF0) >> 4,
         satCntActive: (datasheet.quantity & 0x0F),
         lat: decodeGt06Lat(datasheet.lat, datasheet.course),
