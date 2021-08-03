@@ -1,6 +1,6 @@
 {
   "name": "gt06",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Parses and creates responses for GT06 GPS tracker messages",
   "main": "gt06.js",
   "scripts": {

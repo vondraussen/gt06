@@ -38,9 +38,9 @@ Gt06.prototype.parse = function (data) {
             // case 0x15:
             //     //parseLocation(msg);
             //     break;
-            // case 0x16:
-            //     result = parseAlarm(msg);
-            //     break;
+            case 0x16:
+                Object.assign(parsed, parseAlarm(msg), { imei:this.imei });
+                break;
             // case 0x1A:
             //     //parseLocation(msg);
             //     break;
