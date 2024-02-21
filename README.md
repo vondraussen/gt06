@@ -1,4 +1,5 @@
 ![Node.js CI](https://github.com/vondraussen/gt06/workflows/Node.js%20CI/badge.svg?branch=master) ![Node.js Package](https://github.com/vondraussen/gt06/workflows/Node.js%20Package/badge.svg)
+[![npm audit](https://github.com/vondraussen/gt06/actions/workflows/npm-audit.yml/badge.svg?branch=master)](https://github.com/vondraussen/gt06/actions/workflows/npm-audit.yml)
 # GT06 Message Parser
 This is a GT06 GPS Tracker message parser implementation. It can be used to implement your own server.
 It parses all messages received from the device and creates the response message, if needed.
