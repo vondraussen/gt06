@@ -28,6 +28,7 @@ Gt06.prototype.parse = function (data) {
                 parsed.responseMsg = createResponse(msg);
                 break;
             case 0x12: // location message
+            case 0x22: // extended location message
                 Object.assign(parsed, parseLocation(msg), { imei:this.imei });
                 break;
             case 0x13: // status message
@@ -44,9 +45,11 @@ Gt06.prototype.parse = function (data) {
             // case 0x1A:
             //     //parseLocation(msg);
             //     break;
-            // case 0x80:
-            //     //parseLocation(msg);
-            //     break;
+            case 0x94: // Info message
+            case 0x20: // extended Info message
+            case 0x80: // Info short message
+                Object.assign(parsed, parseInfo(msg), { imei:this.imei });
+                break;
             default:
                 throw {
                     error: 'unknown message type',
@@ -71,7 +74,7 @@ Gt06.prototype.clearMsgBuffer = function () {
 
 function checkHeader(data) {
     let header = data.slice(0, 2);
-    if (!header.equals(Buffer.from('7878', 'hex'))) {
+    if (!header.equals(Buffer.from('7878', 'hex')) && !header.equals(Buffer.from('7979', 'hex'))) {
         return false;
     }
     return true;
@@ -91,6 +94,18 @@ function selectEvent(data) {
             break;
         case 0x16:
             eventStr = 'alarm';
+            break;
+        case 0x22:
+            eventStr = 'location_extended';
+            break;
+        case 0x94:
+            eventStr = 'info';
+            break;
+        case 0x20:
+            eventStr = 'info_extended';
+            break;
+        case 0x08:
+            eventStr = 'info_short';
             break;
         default:
             eventStr = 'unknown';
@@ -286,6 +301,37 @@ function parseAlarm(data) {
     return parsed;
 }
 
+function parseInfo(data) {
+    const info = {
+      startBit: data.readUInt16BE(0),
+      protocolLength: data.readUInt8(2),
+      protocolNumber: data.readUInt8(3),
+      infoType: data.readUInt8(4),
+      infoData: data.slice(5, data.length - 4)
+    };
+  
+    const parsed = {
+      infoType: info.infoType,
+      infoData: info.infoData.toString('hex')
+    };
+  
+    const extended = (() => {
+      switch (info.infoType) {
+        case 0x0A:
+          return {
+            imei: parseInt(info.infoData.slice(0, 8).toString('hex'), 10),
+            serialNumber: info.infoData.readUInt16BE(8)
+          };
+        default:
+          return null;
+      }
+    })();
+  
+    if (extended) Object.assign(parsed, extended);
+    return parsed;
+  }
+  
+
 function createResponse(data) {
     let respRaw = Buffer.from('787805FF0001d9dc0d0a', 'hex');
     // we put the protocol of the received message into the response message
@@ -324,8 +370,11 @@ function appendCrc16(data) {
 }
 
 function sliceMsgsInBuff(data) {
-    let startPattern = new Buffer.from('7878', 'hex');
-    let nextStart = data.indexOf(startPattern, 2);
+    let startPattern1 = new Buffer.from('7878', 'hex');
+    let startPattern2 = new Buffer.from('7979', 'hex');
+    let nextStart1 = data.indexOf(startPattern1, 2);
+    let nextStart2 = data.indexOf(startPattern2, 2);
+    let nextStart = nextStart1 === -1 ? nextStart2 : (nextStart2 === -1 ? nextStart1 : Math.min(nextStart1, nextStart2));
     let msgArray = new Array();
 
     if (nextStart === -1) {
@@ -336,7 +385,9 @@ function sliceMsgsInBuff(data) {
     let redMsgBuff = new Buffer.from(data.slice(nextStart));
 
     while (nextStart != -1) {
-        nextStart = redMsgBuff.indexOf(startPattern, 2);
+        nextStart1 = redMsgBuff.indexOf(startPattern1, 2);
+        nextStart2 = redMsgBuff.indexOf(startPattern2, 2);
+        nextStart = nextStart1 === -1 ? nextStart2 : (nextStart2 === -1 ? nextStart1 : Math.min(nextStart1, nextStart2));
         if (nextStart === -1) {
             msgArray.push(new Buffer.from(redMsgBuff));
             return msgArray;
