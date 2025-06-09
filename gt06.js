@@ -47,7 +47,7 @@ Gt06.prototype.parse = function (data) {
             //     break;
             case 0x94: // Info message
             case 0x20: // extended Info message
-            case 0x80: // Info short message
+            case 0x08: // Info short message
                 Object.assign(parsed, parseInfo(msg), { imei:this.imei });
                 break;
             default:
