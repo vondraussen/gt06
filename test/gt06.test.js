@@ -114,6 +114,44 @@ const locationQuad = new Buffer.from('78781f1211071403362aca0543ec4f00ff976e0215
 
 const unknown = new Buffer.from('70780d01012345678901234500018cdd0d0a', 'hex')
 
+const infoMessage = new Buffer.from('7979000894000000000386ba0d0a', 'hex')
+const infoMessageResult = {
+    event: {
+        number: 0x94,
+        string: 'info'
+    },
+    parsed: {
+        infoType: 0x00,
+        infoData: '0000000003'
+    }
+}
+
+const infoExtendedMessage = new Buffer.from('79790020940a0869412075603594072440003538658489554000000353865843000fc6710d0a', 'hex')
+const infoExtendedMessageResult = {
+    event: {
+        number: 0x20,
+        string: 'info_extended'
+    },
+    parsed: {
+        infoType: 0x0A,
+        infoData: '0a0869412075603594072440003538658489554000000353865843000fc671',
+        imei: 869412075603594,
+        serialNumber: 7
+    }
+}
+
+const infoShortMessage = new Buffer.from('797900089400000000101aa00d0a', 'hex')
+const infoShortMessageResult = {
+    event: {
+        number: 0x08,
+        string: 'info_short'
+    },
+    parsed: {
+        infoType: 0x00,
+        infoData: '0000000010'
+    }
+}
+
 test('Login Test', () => {
     var gt06 = new Gt06();
     gt06.parse(login);
@@ -212,4 +250,53 @@ test('Time Test 2', () => {
     gt06.parse(timeTest2);
     expect(gt06.fixTime).toBe(timeTest2Result.fixTime);
     expect(gt06.fixTimestamp).toBe(timeTest2Result.fixTimestamp);
+});
+
+test('Info Message Test', () => {
+    var gt06 = new Gt06();
+    gt06.parse(infoMessage);
+    expect(gt06.event.number).toBe(infoMessageResult.event.number);
+    expect(gt06.event.string).toBe(infoMessageResult.event.string);
+    expect(gt06.infoType).toBe(infoMessageResult.parsed.infoType);
+    expect(gt06.infoData).toBe(infoMessageResult.parsed.infoData);
+});
+
+test('Info Extended Message Test', () => {
+    var gt06 = new Gt06();
+    gt06.parse(infoExtendedMessage);
+    expect(gt06.event.number).toBe(infoExtendedMessageResult.event.number);
+    expect(gt06.event.string).toBe(infoExtendedMessageResult.event.string);
+    expect(gt06.infoType).toBe(infoExtendedMessageResult.parsed.infoType);
+    expect(gt06.infoData).toBe(infoExtendedMessageResult.parsed.infoData);
+    expect(gt06.imei).toBe(infoExtendedMessageResult.parsed.imei);
+    expect(gt06.serialNumber).toBe(infoExtendedMessageResult.parsed.serialNumber);
+});
+
+test('Info Short Message Test', () => {
+    var gt06 = new Gt06();
+    gt06.parse(infoShortMessage);
+    expect(gt06.event.number).toBe(infoShortMessageResult.event.number);
+    expect(gt06.event.string).toBe(infoShortMessageResult.event.string);
+    expect(gt06.infoType).toBe(infoShortMessageResult.parsed.infoType);
+    expect(gt06.infoData).toBe(infoShortMessageResult.parsed.infoData);
+});
+
+test('Multiple Info Messages Test', () => {
+    var gt06 = new Gt06();
+    const combinedBuffer = Buffer.concat([infoMessage, infoExtendedMessage, infoShortMessage]);
+    gt06.parse(combinedBuffer);
+    expect(gt06.msgBufferRaw.length).toBe(3);
+    expect(gt06.msgBuffer.length).toBe(3);
+    
+    // Verifica a primeira mensagem
+    expect(gt06.msgBuffer[0].event.number).toBe(infoMessageResult.event.number);
+    expect(gt06.msgBuffer[0].infoType).toBe(infoMessageResult.parsed.infoType);
+    
+    // Verifica a segunda mensagem
+    expect(gt06.msgBuffer[1].event.number).toBe(infoExtendedMessageResult.event.number);
+    expect(gt06.msgBuffer[1].imei).toBe(infoExtendedMessageResult.parsed.imei);
+    
+    // Verifica a terceira mensagem
+    expect(gt06.msgBuffer[2].event.number).toBe(infoShortMessageResult.event.number);
+    expect(gt06.msgBuffer[2].infoType).toBe(infoShortMessageResult.parsed.infoType);
 });
